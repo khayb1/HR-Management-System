@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../supabase";
 import { useNavigate } from "react-router";
+import { Lock, Mail } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -74,7 +75,7 @@ const Login = () => {
       <main className="bg-amber-100 w-full h-screen py-auto text-center flex flex-col justify-center items-center">
         <form
           onSubmit={handleLogin}
-          className="relative w-fit h-fit px-10 py-12 mx-auto rounded-2xl shadow-2xl bg-gray-100/90 bg flex flex-col"
+          className="w-96 relative h-fit px-10 py-12 mx-auto rounded-2xl shadow-2xl bg-gray-100/90 bg flex flex-col"
         >
           <p className="text-3xl pb-5 text-gray-950 font-bold ">
             Welcome Back!
@@ -83,22 +84,32 @@ const Login = () => {
 
           {/* email  */}
           <div className="py-5">
+            <span className="flex gap-2 items-center">
+              <Mail className="m-2" />
+              Email
+            </span>
+
             <input
               type="text"
               placeholder="email address"
               value={email}
-              className=" p-3 rounded-xl font-medium w-72 bg-white"
+              className=" p-3 rounded-xl font-medium w-full bg-white"
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
           {/* password  */}
-          <div className="py-5">
+          <div className="py-5 ">
+            <span className="flex items-center">
+              <Lock className="m-2" />
+              Password
+            </span>
+
             <input
               type="password"
               value={password}
-              placeholder="password"
-              className=" p-3 rounded-xl font-medium  w-72 bg-white"
+              placeholder="........"
+              className=" p-3 rounded-xl font-medium  w-full bg-white"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -106,7 +117,7 @@ const Login = () => {
           {/* submit button  */}
           <button
             type="submit"
-            className="bg-gray-300 hover:bg-gray-500 text-lg font-medium p-2 pt-3 rounded-lg "
+            className="bg-gray-300 hover:bg-gray-500 text-lg font-medium p-2 pt-3 rounded-lg transition-all"
           >
             Sign In
           </button>
