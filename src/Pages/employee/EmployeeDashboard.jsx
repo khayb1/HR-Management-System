@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, LogOut, Timer } from "lucide-react";
+import { Calendar, CheckCircle2Icon, Clock, LogOut, Timer } from "lucide-react";
 import { logout } from "../../utils/logout";
 import { useAuth } from "../../context/AuthContext";
 import { getLeaveSummary } from "../../services/leaveservices";
@@ -84,7 +84,7 @@ const EmployeeDashboard = () => {
               <p>Days Remaining</p>
             </div>
             <span className="p-2 bg-green-500 rounded-xl">
-              <LogOut size={40} color="white" />
+              <CheckCircle2Icon size={40} color="white" />
             </span>
           </div>
           {/* Pending Requests */}

@@ -16,30 +16,24 @@ const Sidebar = () => {
           <p className="text-2xl font-bold w-40">Origin8's leave Management</p>
         </div>
         <ul>
-          <li>
-            <Link to="" />
-            Dashboard
+          {/* <li>
+            <Link to=""> Dashboard</Link>
           </li>
           <li>
-            <Link to="" />
-            Apply Leave
+            <Link to="">Apply Leave</Link>
           </li>
           <li>
-            <Link to="" />
-            My Leaves
+            <Link to="" My Leaves></Link>
           </li>
           <li>
-            <Link to="" />
-            My Profile
+            <Link to=""> My Profile</Link>
           </li>
           <li>
-            <Link to="" />
-            Approve Leaves
+            <Link to="">Approve Leaves</Link>
           </li>
           <li>
-            <Link to="" />
-            Employees
-          </li>
+            <Link to="">Employees</Link>
+          </li> */}
         </ul>
       </navbar>
     </>
