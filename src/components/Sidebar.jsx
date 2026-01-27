@@ -28,7 +28,7 @@ const Sidebar = () => {
   };
 
   return (
-    <nav className="w-fit h-full py-3 px-4 flex flex-col bg-gray-800 text-gray-200 ">
+    <nav className="w-fit h-screen py-3 px-4 flex flex-col bg-gray-800 text-gray-200 ">
       {/* top section */}
       <div className="flex gap-5 justify-center items-center">
         <CalendarDays

@@ -9,6 +9,7 @@ import {
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 import { useAuth } from "./context/AuthContext";
+import ApplyLeave from "./Pages/All Users/ApplyLeave";
 
 function App() {
   const { user, role, loading } = useAuth();
@@ -47,6 +48,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["employee"]}>
                 <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/apply-leave"
+            element={
+              <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
+                <ApplyLeave />
               </ProtectedRoute>
             }
           />

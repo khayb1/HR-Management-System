@@ -7,21 +7,12 @@ import {
   LogOut,
   Timer,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+// import { useAuth } from "../../context/AuthContext";
 import { getLeaveSummary } from "../../services/leaveservices";
 import { Link } from "react-router-dom";
+import Header from "../../components/Header";
 
 const EmployeeDashboard = () => {
-  const { user } = useAuth();
-
-  // Proper date
-  const today = new Date().toLocaleDateString("en-GB", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   // leave summary remaining
   const [totalLeave, setTotalLeave] = useState(0);
   const [daysUsed, setUsed] = useState(0);
@@ -40,19 +31,10 @@ const EmployeeDashboard = () => {
 
   return (
     <>
-      <nav className="flex justify-between items-center px-10 py-5 bg-gray-100">
-        <div>
-          <p className="font-bold text-2xl">Employee Dashboard</p>
-          <p className="text-sm text-gray-600">Welcome back {user?.email}</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Calendar />
-          <span>{today}</span>
-        </div>
-      </nav>
-
-      <main className="p-4">
+      <div>
+        <Header header="Employee Dashbaord" />
+      </div>
+      <main className="p-4 px-6">
         <h1 className="text-2xl font-bold mb-4">Leave Overview</h1>
         {/* stats cards  */}
         <div className="flex gap-5 flex-wrap">
@@ -98,7 +80,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
         {/* quick actions  */}
-        <section className="flex flex-col mt-5 bg-gray-100 p-5 rounded-2xl">
+        <section className="flex flex-col mt-5 bg-gray-200 p-5 rounded-2xl shadow-xl">
           {/* top section  */}
           <div className="flex gap-5 ">
             <FastForwardIcon size={30} className="" />
@@ -108,7 +90,7 @@ const EmployeeDashboard = () => {
           <div className="flex gap-5  ">
             {/* apply for leave  */}
             <Link
-              to=""
+              to="/apply-leave"
               className="flex w-56 justify-center items-center transition-all gap-3 px-4 py-3 border-none bg-amber-200 rounded-2xl hover:bg-amber-100 "
             >
               <CheckCircle2Icon size={30} />
