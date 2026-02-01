@@ -78,8 +78,8 @@ const Sidebar = () => {
         {role === "admin" && (
           <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
             <Users size={30} />
-            <Link to="/employees" className="w-full">
-              Employees
+            <Link to="/manage-users" className="w-full">
+              Manage Employees
             </Link>
           </li>
         )}

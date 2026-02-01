@@ -53,7 +53,7 @@ const Login = () => {
 
     // Fetch role from profile table
     const { data: profile, error: roleError } = await supabase
-      .from("profile") // ✅ as requested
+      .from("profile")
       .select("role")
       .eq("id", data.user.id)
       .single();

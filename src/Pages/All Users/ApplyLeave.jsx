@@ -21,17 +21,16 @@ const ApplyLeave = () => {
       return;
     }
 
-    const { error } = await supabase.from("leaves").insert({
-      employee_id: profile.id,
-      //   employee_name: profile.full_name,
-      department: profile.department,
-      //   role: profile.role,
-      leave_type: leaveType,
+    const { error } = await supabase.from("leave_requests").insert({
+      profile_id: profile.id,
+      // employee_name: profile.full_name,
+      department_id: profile.department,
+      // leave_type: leaveType,
       start_date: startDate,
       end_date: endDate,
       reason,
       contact_info: contact,
-      status: "pending",
+      // status: "pending",
     });
 
     if (error) {

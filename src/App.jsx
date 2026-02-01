@@ -5,12 +5,13 @@ import {
   AdminDashboard,
   Login,
   EmployeeDashboard,
+  ApplyLeave,
+  ApproveLeave,
+  ManageUsers,
 } from "./Pages";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 import { useAuth } from "./context/AuthContext";
-import ApplyLeave from "./Pages/All Users/ApplyLeave";
-
 function App() {
   const { user, role, loading } = useAuth();
 
@@ -33,6 +34,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* admin  */}
 
           <Route
             path="/adminDashboard"
@@ -44,6 +46,15 @@ function App() {
           />
 
           <Route
+            path="/manage-users"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <ManageUsers />
+              </ProtectedRoute>
+            }
+          />
+          {/* employee  */}
+          <Route
             path="/employeeDashboard"
             element={
               <ProtectedRoute allowedRoles={["employee"]}>
@@ -51,12 +62,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+          {/* all users  */}
           <Route
             path="/apply-leave"
             element={
               <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
                 <ApplyLeave />
+              </ProtectedRoute>
+            }
+          />
+          {/* admin and hod only  */}
+
+          <Route
+            path="/approve-leaves"
+            element={
+              <ProtectedRoute allowedRoles={["hod", "admin"]}>
+                <ApproveLeave />
               </ProtectedRoute>
             }
           />
