@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
+import Header from "../../components/Header";
 
 const ManageUsers = () => {
   const [form, setForm] = useState({
@@ -215,74 +216,76 @@ const ManageUsers = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Manage Users</h1>
+    <>
+      <Header title="Manage Users" />
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+          {/* Create User Form */}
+          <div className="bg-white p-6 rounded-lg shadow w-full">
+            <h2 className="text-2xl font-bold mb-6">Create New User</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Create User Form */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-2xl font-bold mb-6">Create New User</h2>
+            {error && (
+              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                {error}
+              </div>
+            )}
 
-          {error && (
-            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-              {error}
-            </div>
-          )}
+            {success && (
+              <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
+                {success}
+              </div>
+            )}
 
-          {success && (
-            <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
-              {success}
-            </div>
-          )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Full Name *
+                </label>
+                <input
+                  name="full_name"
+                  value={form.full_name}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Full Name *
-              </label>
-              <input
-                name="full_name"
-                value={form.full_name}
-                onChange={handleChange}
-                placeholder="John Doe"
-                className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Email *
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Email *</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="john@example.com"
-                className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Temporary Password *
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Min 6 characters"
+                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                  minLength={6}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  User will be able to change this after first login
+                </p>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Temporary Password *
-              </label>
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Min 6 characters"
-                className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-                minLength={6}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                User will be able to change this after first login
-              </p>
-            </div>
-
-            {/* <div>
+              {/* <div>
               <label className="block text-sm font-medium mb-1">
                 Initial Leave Balance (Days)
               </label>
@@ -297,127 +300,132 @@ const ManageUsers = () => {
               />
             </div> */}
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Role *</label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              >
-                <option value="employee">Employee</option>
-                <option value="hod">Head of Department (HOD)</option>
-                <option value="admin">Administrator</option>
-              </select>
-            </div>
-
-            {form.role !== "admin" && (
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Department *
-                </label>
+                <label className="block text-sm font-medium mb-1">Role *</label>
                 <select
-                  name="department_id"
-                  value={form.department_id}
+                  name="role"
+                  value={form.role}
                   onChange={handleChange}
                   className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required={form.role !== "admin"}
+                  required
                 >
-                  <option value="">Select Department</option>
-                  {departments.map((dept) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
+                  <option value="employee">Employee</option>
+                  <option value="hod">Head of Department (HOD)</option>
+                  <option value="admin">Administrator</option>
                 </select>
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
-            >
-              {loading ? "Creating User..." : "Create User"}
-            </button>
-          </form>
-        </div>
+              {form.role !== "admin" && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Department *
+                  </label>
+                  <select
+                    name="department_id"
+                    value={form.department_id}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required={form.role !== "admin"}
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-        {/* Users List */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">All Users ({users.length})</h2>
-            <button
-              onClick={fetchUsers}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              Refresh
-            </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+              >
+                {loading ? "Creating User..." : "Create User"}
+              </button>
+            </form>
           </div>
 
-          {fetchingUsers ? (
-            <div className="text-center py-8 text-gray-500">
-              Loading users...
+          {/* Users List */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">All Users ({users.length})</h2>
+              <button
+                onClick={fetchUsers}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Refresh
+              </button>
             </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No users found</div>
-          ) : (
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-              {users.map((user) => (
-                <div
-                  key={user.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-lg">
-                          {user.full_name}
-                        </h3>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            user.role === "admin"
-                              ? "bg-purple-100 text-purple-800"
-                              : user.role === "hod"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-blue-100 text-blue-800"
-                          }`}
-                        >
-                          {user.role.toUpperCase()}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{user.email}</p>
 
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {user.departments && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {user.departments.name}
+            {fetchingUsers ? (
+              <div className="text-center py-8 text-gray-500">
+                Loading users...
+              </div>
+            ) : users.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No users found
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-semibold text-lg">
+                            {user.full_name}
+                          </h3>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              user.role === "admin"
+                                ? "bg-purple-100 text-purple-800"
+                                : user.role === "hod"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {user.role.toUpperCase()}
                           </span>
-                        )}
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          {user.leave_balance || 0} days leave
-                        </span>
-                      </div>
-                    </div>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {user.email}
+                        </p>
 
-                    {currentUserRole === "admin" && (
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="ml-4 px-3 py-1 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
-                        title="Delete User"
-                      >
-                        Delete
-                      </button>
-                    )}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {user.departments && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              {user.departments.name}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {user.leave_balance || 0} days leave
+                          </span>
+                        </div>
+                      </div>
+
+                      {currentUserRole === "admin" && (
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="ml-4 px-3 py-1 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
+                          title="Delete User"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
