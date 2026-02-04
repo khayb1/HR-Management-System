@@ -18,26 +18,30 @@ const ManageUsers = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState("");
+  const [session, setSession] = useState(null);
 
-  // Fetch current user's role and departments
+  // Fetch current user's role, session and departments
   useEffect(() => {
-    fetchCurrentUser();
+    fetchSessionAndUser();
     fetchDepartments();
     fetchUsers();
   }, []);
 
-  const fetchCurrentUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
+  const fetchSessionAndUser = async () => {
+    // Get current session
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session) {
+      setSession(sessionData.session);
+
+      // Get user profile to check role
+      const { data: profileData } = await supabase
         .from("profile")
         .select("role")
-        .eq("id", user.id)
+        .eq("id", sessionData.session.user.id)
         .single();
-      if (data) {
-        setCurrentUserRole(data.role);
+
+      if (profileData) {
+        setCurrentUserRole(profileData.role);
       }
     }
   };
@@ -86,38 +90,23 @@ const ManageUsers = () => {
     setSuccess("");
 
     try {
-      // Get current user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Get current session
+      const { data: sessionData } = await supabase.auth.getSession();
 
-      if (!user) {
+      if (!sessionData.session) {
         setError("You must be logged in");
         setLoading(false);
         return;
       }
 
-      // Check if current user is admin
-      const { data: profile } = await supabase
-        .from("profile")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile || profile.role !== "admin") {
-        setError("Only admins can create users");
-        setLoading(false);
-        return;
-      }
-
-      // Prepare request body
+      // Prepare request body with session
       const requestBody = {
         email: form.email,
         password: form.password,
         full_name: form.full_name,
         role: form.role,
-        leave_balance: parseInt(form.leave_balance),
-        requesting_user_id: user.id,
+        // leave_balance: parseInt(form.leave_balance),
+        session: sessionData.session,
       };
 
       // Only add department_id if role is not admin AND department is selected
@@ -127,11 +116,14 @@ const ManageUsers = () => {
 
       console.log("Calling edge function...");
 
-      // Call edge function
+      // Call edge function with session
       const { data, error: functionError } = await supabase.functions.invoke(
         "create-user",
         {
           body: requestBody,
+          headers: {
+            Authorization: `Bearer ${sessionData.session.access_token}`,
+          },
         },
       );
 
@@ -147,8 +139,8 @@ const ManageUsers = () => {
           full_name: "",
           email: "",
           password: "",
-          role: "employee",
-          leave_balance: 20,
+          role: "",
+          // leave_balance: 20,
           department_id: "",
         });
         fetchUsers();
@@ -171,46 +163,36 @@ const ManageUsers = () => {
     }
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Get current session
+      const { data: sessionData } = await supabase.auth.getSession();
 
-      if (!user) {
+      if (!sessionData.session) {
         setError("You must be logged in");
         return;
       }
 
-      // Check if current user is admin
-      const { data: profile } = await supabase
-        .from("profile")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+      // Call edge function for deletion
+      const { data, error: functionError } = await supabase.functions.invoke(
+        "delete-user",
+        {
+          body: {
+            user_id: userId,
+            session: sessionData.session,
+          },
+          headers: {
+            Authorization: `Bearer ${sessionData.session.access_token}`,
+          },
+        },
+      );
 
-      if (!profile || profile.role !== "admin") {
-        setError("Only admins can delete users");
-        return;
+      if (functionError) {
+        throw new Error(functionError.message);
       }
 
-      // Delete from auth.users (requires admin privileges)
-      const { error: deleteError } =
-        await supabase.auth.admin.deleteUser(userId);
-
-      if (deleteError) {
-        // Fallback: just delete from profile if auth deletion fails
-        const { error: profileError } = await supabase
-          .from("profile")
-          .delete()
-          .eq("id", userId);
-
-        if (profileError) {
-          setError(profileError.message);
-        } else {
-          setSuccess("User deleted from profile (auth deletion failed)");
-          fetchUsers();
-        }
+      if (data?.error) {
+        setError(data.error);
       } else {
-        setSuccess("User deleted successfully");
+        setSuccess(data?.message || "User deleted successfully");
         fetchUsers();
       }
     } catch (err) {
@@ -300,7 +282,7 @@ const ManageUsers = () => {
               </p>
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium mb-1">
                 Initial Leave Balance (Days)
               </label>
@@ -313,7 +295,7 @@ const ManageUsers = () => {
                 className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
-            </div>
+            </div> */}
 
             <div>
               <label className="block text-sm font-medium mb-1">Role *</label>
@@ -414,7 +396,7 @@ const ManageUsers = () => {
                           </span>
                         )}
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          {user.leave_balance} days leave
+                          {user.leave_balance || 0} days leave
                         </span>
                       </div>
                     </div>
