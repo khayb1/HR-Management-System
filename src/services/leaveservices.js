@@ -12,9 +12,9 @@ export const getLeaveSummary = async () => {
   // Get leave balance directly
   const { data, error } = await supabase
     .from("leave_balances")
-    .select("total_days, remaining_days ")
-    .eq("profile_id", user.id)
-    .single(); // one row per user
+    .select("total_entitled, remaining_days")
+    .eq("user_id", user.id)
+    .maybeSinglesingle(); // one row per user
 
   if (error) {
     console.error(error);

@@ -8,12 +8,12 @@ const ApproveLeave = () => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
 
-  // ✅ Fetch current user's profile first
+  /* ================= FETCH LOGGED-IN USER PROFILE ================= */
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
-  // ✅ Fetch pending leaves when profile is loaded
+  /* ================= FETCH LEAVES AFTER PROFILE LOAD ================= */
   useEffect(() => {
     if (profile) {
       fetchPendingLeaves();
@@ -24,77 +24,73 @@ const ApproveLeave = () => {
     try {
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser();
 
-      if (!user) {
+      if (authError || !user) {
         setError("Not authenticated");
         setLoading(false);
         return;
       }
 
-      // Fetch the user's profile
-      const { data: profileData, error: profileError } = await supabase
+      const { data, error } = await supabase
         .from("profile")
         .select("id, role, department_id, full_name")
         .eq("id", user.id)
         .single();
 
-      if (profileError) {
-        setError(profileError.message);
+      if (error) {
+        setError(error.message);
         setLoading(false);
         return;
       }
 
-      // Check if user is HOD
-      if (profileData.role !== "hod") {
-        setError("Only HODs can approve leave requests");
+      if (data.role !== "hod") {
+        setError("Access denied. Only HODs can approve leave.");
         setLoading(false);
         return;
       }
 
-      setProfile(profileData);
+      setProfile(data);
     } catch (err) {
       setError(err.message);
       setLoading(false);
     }
   };
 
+  /* ================= FETCH DEPARTMENT PENDING LEAVES ================= */
   const fetchPendingLeaves = async () => {
     setLoading(true);
     setError("");
 
     try {
-      // Fetch pending leaves for HOD's department
       const { data, error } = await supabase
         .from("leave_requests")
         .select(
           `
-          id,
-          leave_type_id,
-          start_date,
-          end_date,
-          total_days,
-          reason,
-          status,
-          profile_id,
-          department_id,
-          profile:profile_id (
-            id,
-            full_name,
-            email
-          ),
-          department:department_id (
-            id,
-            name
-          ),
-          leave_types:leave_type_id (
-            id,
-            name
-          )
-        `,
+    id,
+    start_date,
+    end_date,
+    total_days,
+    reason,
+    status,
+    created_at,
+
+    employee:profile!leave_requests_user_id_fkey (
+      id,
+      full_name,
+      email,
+      department_id
+    ),
+
+    leave_types (
+      id,
+      name
+    )
+  `,
         )
-        .eq("status", "PENDING_HOD")
-        .eq("department_id", profile.department_id)
+        .eq("status", "pending")
+        .eq("employee.department_id", profile.department_id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -111,13 +107,14 @@ const ApproveLeave = () => {
     }
   };
 
-  // ✅ Approve leave (send to HR)
+  /* ================= APPROVE LEAVE ================= */
   const approveLeave = async (leaveId) => {
     try {
       const { error } = await supabase
         .from("leave_requests")
         .update({
-          status: "PENDING_HR",
+          status: "approved",
+          approved_by: profile.id,
         })
         .eq("id", leaveId);
 
@@ -131,14 +128,13 @@ const ApproveLeave = () => {
     }
   };
 
-  // ❌ Reject leave
+  /* ================= REJECT LEAVE ================= */
   const rejectLeave = async (leaveId) => {
     try {
       const { error } = await supabase
         .from("leave_requests")
         .update({
-          status: "REJECTED",
-          rejected_by: profile.id,
+          status: "rejected",
         })
         .eq("id", leaveId);
 
@@ -152,9 +148,10 @@ const ApproveLeave = () => {
     }
   };
 
+  /* ================= UI ================= */
   return (
     <>
-      <Header title="Approve Leave Requests" />
+      <Header header="Approve Leave Requests" />
 
       <section className="p-4 max-w-7xl mx-auto">
         {error && (
@@ -163,70 +160,62 @@ const ApproveLeave = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-xl font-bold mb-4">
             Pending Department Leave Requests
           </h2>
 
           {loading ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600">Loading leave requests...</p>
-            </div>
+            <p className="text-center py-8 text-gray-500">
+              Loading leave requests...
+            </p>
           ) : leaves.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No pending leave requests</p>
-            </div>
+            <p className="text-center py-8 text-gray-500">
+              No pending leave requests
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-100 text-left">
-                    <th className="p-3 border border-gray-300">Employee</th>
-                    <th className="p-3 border border-gray-300">Email</th>
-                    <th className="p-3 border border-gray-300">Leave Type</th>
-                    <th className="p-3 border border-gray-300">From</th>
-                    <th className="p-3 border border-gray-300">To</th>
-                    <th className="p-3 border border-gray-300">Days</th>
-                    <th className="p-3 border border-gray-300">Reason</th>
-                    <th className="p-3 border border-gray-300">Actions</th>
+                  <tr className="bg-gray-100">
+                    <th className="p-3 border">Employee</th>
+                    <th className="p-3 border">Email</th>
+                    <th className="p-3 border">Leave Type</th>
+                    <th className="p-3 border">From</th>
+                    <th className="p-3 border">To</th>
+                    <th className="p-3 border">Days</th>
+                    <th className="p-3 border">Reason</th>
+                    <th className="p-3 border">Actions</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {leaves.map((leave) => (
                     <tr key={leave.id} className="hover:bg-gray-50">
-                      <td className="p-3 border border-gray-300">
-                        {leave.profile?.full_name || "N/A"}
-                      </td>
-                      <td className="p-3 border border-gray-300">
-                        {leave.profile?.email || "N/A"}
-                      </td>
-                      <td className="p-3 border border-gray-300">
-                        {leave.leave_types?.name || "N/A"}
-                      </td>
-                      <td className="p-3 border border-gray-300">
+                      <td className="p-3 border">{profile?.full_name}</td>
+                      <td className="p-3 border">{profile?.email}</td>
+                      <td className="p-3 border">{leave.leave_types?.name}</td>
+                      <td className="p-3 border">
                         {new Date(leave.start_date).toLocaleDateString()}
                       </td>
-                      <td className="p-3 border border-gray-300">
+                      <td className="p-3 border">
                         {new Date(leave.end_date).toLocaleDateString()}
                       </td>
-                      <td className="p-3 border border-gray-300">
-                        {leave.total_days}
+                      <td className="p-3 border">{leave.total_days}</td>
+                      <td className="p-3 border max-w-xs truncate">
+                        {leave.reason}
                       </td>
-                      <td className="p-3 border border-gray-300 max-w-xs truncate">
-                        {leave.reason || "No reason provided"}
-                      </td>
-                      <td className="p-3 border border-gray-300">
+                      <td className="p-3 border">
                         <div className="flex gap-2">
                           <button
                             onClick={() => approveLeave(leave.id)}
-                            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => rejectLeave(leave.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
                           >
                             Reject
                           </button>

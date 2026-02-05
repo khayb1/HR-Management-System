@@ -8,7 +8,7 @@ const ManageUsers = () => {
     email: "",
     password: "",
     role: "employee",
-    leave_balance: 20,
+    total_entitled: 20,
     department_id: "",
   });
 
@@ -20,12 +20,14 @@ const ManageUsers = () => {
   const [success, setSuccess] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState("");
   const [session, setSession] = useState(null);
+  const [leaveBalances, setLeaveBalances] = useState({});
 
   // Fetch current user's role, session and departments
   useEffect(() => {
     fetchSessionAndUser();
     fetchDepartments();
     fetchUsers();
+    fetchLeaveBalances();
   }, []);
 
   const fetchSessionAndUser = async () => {
@@ -80,8 +82,28 @@ const ManageUsers = () => {
     setFetchingUsers(false);
   };
 
+  const fetchLeaveBalances = async () => {
+    const currentYear = new Date().getFullYear();
+    const { data, error } = await supabase
+      .from("leave_balances")
+      .select("user_id, total_entitled, used_days, remaining_days")
+      .eq("year", currentYear);
+
+    if (!error && data) {
+      const balances = {};
+      data.forEach((balance) => {
+        balances[balance.user_id] = balance;
+      });
+      setLeaveBalances(balances);
+    }
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "total_entitled" ? parseFloat(value) || 0 : value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -106,7 +128,7 @@ const ManageUsers = () => {
         password: form.password,
         full_name: form.full_name,
         role: form.role,
-        // leave_balance: parseInt(form.leave_balance),
+        total_entitled: parseFloat(form.total_entitled),
         session: sessionData.session,
       };
 
@@ -140,11 +162,12 @@ const ManageUsers = () => {
           full_name: "",
           email: "",
           password: "",
-          role: "",
-          // leave_balance: 20,
+          role: "employee",
+          total_entitled: 20,
           department_id: "",
         });
         fetchUsers();
+        fetchLeaveBalances();
       }
     } catch (err) {
       console.error("Error:", err);
@@ -157,7 +180,7 @@ const ManageUsers = () => {
   const handleDeleteUser = async (userId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this user? This will also delete their auth account.",
+        "Are you sure you want to delete this user? This will also delete their auth account and all associated data.",
       )
     ) {
       return;
@@ -195,10 +218,17 @@ const ManageUsers = () => {
       } else {
         setSuccess(data?.message || "User deleted successfully");
         fetchUsers();
+        fetchLeaveBalances();
       }
     } catch (err) {
       setError(err.message || "An error occurred while deleting user");
     }
+  };
+
+  // Refresh all data
+  const handleRefresh = () => {
+    fetchUsers();
+    fetchLeaveBalances();
   };
 
   // If current user is not admin, show restricted view
@@ -285,20 +315,24 @@ const ManageUsers = () => {
                 </p>
               </div>
 
-              {/* <div>
-              <label className="block text-sm font-medium mb-1">
-                Initial Leave Balance (Days)
-              </label>
-              <input
-                name="leave_balance"
-                type="number"
-                value={form.leave_balance}
-                onChange={handleChange}
-                min="0"
-                className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div> */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Initial Leave Entitlement (Days) *
+                </label>
+                <input
+                  name="total_entitled"
+                  type="number"
+                  value={form.total_entitled}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.5"
+                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Initial leave entitlement for the current year
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">Role *</label>
@@ -352,9 +386,23 @@ const ManageUsers = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">All Users ({users.length})</h2>
               <button
-                onClick={fetchUsers}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                onClick={handleRefresh}
+                className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
               >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  ></path>
+                </svg>
                 Refresh
               </button>
             </div>
@@ -369,57 +417,85 @@ const ManageUsers = () => {
               </div>
             ) : (
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                {users.map((user) => (
-                  <div
-                    key={user.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">
-                            {user.full_name}
-                          </h3>
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              user.role === "admin"
-                                ? "bg-purple-100 text-purple-800"
-                                : user.role === "hod"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-blue-100 text-blue-800"
-                            }`}
-                          >
-                            {user.role.toUpperCase()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {user.email}
-                        </p>
-
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {user.departments && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              {user.departments.name}
+                {users.map((user) => {
+                  const userLeaveBalance = leaveBalances[user.id];
+                  return (
+                    <div
+                      key={user.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-semibold text-lg">
+                              {user.full_name}
+                            </h3>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                user.role === "admin"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : user.role === "hod"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-blue-100 text-blue-800"
+                              }`}
+                            >
+                              {user.role.toUpperCase()}
                             </span>
-                          )}
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            {user.leave_balance || 0} days leave
-                          </span>
-                        </div>
-                      </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {user.email}
+                          </p>
 
-                      {currentUserRole === "admin" && (
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="ml-4 px-3 py-1 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
-                          title="Delete User"
-                        >
-                          Delete
-                        </button>
-                      )}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {user.departments && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {user.departments.name}
+                              </span>
+                            )}
+                            {userLeaveBalance ? (
+                              <>
+                                <span
+                                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                  title="Total Entitled"
+                                >
+                                  Entitled: {userLeaveBalance.total_entitled}{" "}
+                                  days
+                                </span>
+                                <span
+                                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                                  title="Used Days"
+                                >
+                                  Used: {userLeaveBalance.used_days} days
+                                </span>
+                                <span
+                                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                                  title="Remaining Days"
+                                >
+                                  Remaining: {userLeaveBalance.remaining_days}{" "}
+                                  days
+                                </span>
+                              </>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                No leave balance record
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {currentUserRole === "admin" && (
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="ml-4 px-3 py-1 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
+                            title="Delete User"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
