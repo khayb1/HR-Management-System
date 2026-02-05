@@ -14,14 +14,14 @@ export const getLeaveSummary = async () => {
     .from("leave_balances")
     .select("total_entitled, remaining_days")
     .eq("user_id", user.id)
-    .maybeSinglesingle(); // one row per user
+    .single(); // one row per user
 
   if (error) {
     console.error(error);
     return { total: 0, used: 0, remaining: 0 };
   }
 
-  const total = data.total_days ?? 0;
+  const total = data.total_entitled ?? 0;
   const remaining = data.remaining_days ?? 0;
   const used = Math.max(total - remaining, 0);
 

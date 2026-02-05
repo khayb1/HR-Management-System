@@ -151,7 +151,7 @@ const ApproveLeave = () => {
   /* ================= UI ================= */
   return (
     <>
-      <Header header="Approve Leave Requests" />
+      <Header title="Approve Leave Requests" />
 
       <section className="p-4 max-w-7xl mx-auto">
         {error && (
@@ -192,8 +192,8 @@ const ApproveLeave = () => {
                 <tbody>
                   {leaves.map((leave) => (
                     <tr key={leave.id} className="hover:bg-gray-50">
-                      <td className="p-3 border">{profile?.full_name}</td>
-                      <td className="p-3 border">{profile?.email}</td>
+                      <td className="p-3 border">{leave.user?.full_name}</td>
+                      <td className="p-3 border">{leave.user?.email}</td>
                       <td className="p-3 border">{leave.leave_types?.name}</td>
                       <td className="p-3 border">
                         {new Date(leave.start_date).toLocaleDateString()}
