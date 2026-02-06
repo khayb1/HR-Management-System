@@ -4,21 +4,17 @@ import {
   History,
   Home,
   PlusCircle,
-  User,
   UserRoundCogIcon,
   Users,
 } from "lucide-react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../utils/logout";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Sidebar = () => {
   const { profile, user, role } = useAuth();
-
-  const [isactive, setIsActive] = useState();
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   // Logout
@@ -27,9 +23,24 @@ const Sidebar = () => {
     navigate("/", { replace: true });
   };
 
+  // Function to determine active link
+  const isActive = (path) => location.pathname === path;
+
+  // Dynamic role badge styling
+  const roleBadgeClass = () => {
+    switch (profile?.role) {
+      case "admin":
+        return "bg-red-500 text-white";
+      case "hod":
+        return "bg-green-400 text-white";
+      default:
+        return "bg-blue-300 text-black";
+    }
+  };
+
   return (
-    <nav className="w-fit h-screen py-3 px-4 flex flex-col bg-gray-800 text-gray-200 ">
-      {/* top section */}
+    <nav className="w-fit h-screen py-3 px-4 flex flex-col bg-gray-800 text-gray-200">
+      {/* Top Section */}
       <div className="flex gap-5 justify-center items-center">
         <CalendarDays
           size={40}
@@ -38,67 +49,124 @@ const Sidebar = () => {
         />
         <p className="text-xl font-bold w-40">Origin8 Leave Management</p>
       </div>
-      {/* nav links */}
-      <ul className="mt-6 gap-5 flex flex-col ">
-        <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
+
+      {/* Navigation Links */}
+      <ul className="mt-6 gap-5 flex flex-col">
+        <li
+          className={`flex gap-4 items-center px-4 py-2 transition-all ${
+            isActive("/dashboard")
+              ? "bg-amber-100 text-gray-800"
+              : "hover:bg-amber-100 hover:text-gray-800"
+          }`}
+        >
           <Home size={30} />
           <Link to="/dashboard" className="w-full">
             Dashboard
           </Link>
         </li>
-        <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
+
+        <li
+          className={`flex gap-4 items-center px-4 py-2 transition-all ${
+            isActive("/apply-leave")
+              ? "bg-amber-100 text-gray-800"
+              : "hover:bg-amber-100 hover:text-gray-800"
+          }`}
+        >
           <PlusCircle size={30} />
           <Link to="/apply-leave" className="w-full">
             Apply Leave
           </Link>
         </li>
-        <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
+
+        <li
+          className={`flex gap-4 items-center px-4 py-2 transition-all ${
+            isActive("/my-leaves")
+              ? "bg-amber-100 text-gray-800"
+              : "hover:bg-amber-100 hover:text-gray-800"
+          }`}
+        >
           <History size={30} />
           <Link to="/my-leaves" className="w-full">
             My Leaves
           </Link>
         </li>
-        <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
+
+        <li
+          className={`flex gap-4 items-center px-4 py-2 transition-all ${
+            isActive("/profile")
+              ? "bg-amber-100 text-gray-800"
+              : "hover:bg-amber-100 hover:text-gray-800"
+          }`}
+        >
           <UserRoundCogIcon size={30} />
           <Link to="/profile" className="w-full">
             Profile
           </Link>
         </li>
-        {/* hod and admin only  */}
-        {(role === "admin" || role === "hod") && (
-          <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
+
+        {/* HOD Only */}
+        {role === "hod" && (
+          <li
+            className={`flex gap-4 items-center px-4 py-2 transition-all ${
+              isActive("/hod-approve-leaves")
+                ? "bg-amber-100 text-gray-800"
+                : "hover:bg-amber-100 hover:text-gray-800"
+            }`}
+          >
             <CircleCheckIcon size={30} />
-            <Link to="/approve-leaves" className="w-full">
+            <Link to="/hod-approve-leaves" className="w-full">
               Approve Leaves
             </Link>
           </li>
         )}
-        {/* only admin  */}
 
+        {/* Admin Only */}
         {role === "admin" && (
-          <li className="flex gap-4 items-center hover:bg-amber-100 px-4 py-2 transition-all hover:text-gray-800">
-            <Users size={30} />
-            <Link to="/manage-users" className="w-full">
-              Manage Employees
-            </Link>
-          </li>
+          <>
+            <li
+              className={`flex gap-4 items-center px-4 py-2 transition-all ${
+                isActive("/manage-users")
+                  ? "bg-amber-100 text-gray-800"
+                  : "hover:bg-amber-100 hover:text-gray-800"
+              }`}
+            >
+              <Users size={30} />
+              <Link to="/manage-users" className="w-full">
+                Manage Employees
+              </Link>
+            </li>
+
+            <li
+              className={`flex gap-4 items-center px-4 py-2 transition-all ${
+                isActive("/hod-approve-leaves")
+                  ? "bg-amber-100 text-gray-800"
+                  : "hover:bg-amber-100 hover:text-gray-800"
+              }`}
+            >
+              <CircleCheckIcon size={30} />
+              <Link to="/admin-approve-leaves" className="w-full">
+                Approve Leaves
+              </Link>
+            </li>
+          </>
         )}
       </ul>
-      {/* user info */}
+
+      {/* User Info */}
       <div className="flex flex-col items-center mt-5">
-        {/* avatar */}
+        {/* Avatar */}
         <img
           src="https://origin8gh.com/storage/2025/05/kelvin-copy-819x1024.jpg"
+          alt={`${profile?.full_name}'s avatar`}
           loading="lazy"
-          className=" h-20 w-20 rounded-full"
+          className="h-20 w-20 rounded-full"
         />
-        {/* name  */}
-        <span className="flex flex-col items-center ">
-          {/* name  */}
+
+        {/* Name, Email, Role, Logout */}
+        <span className="flex flex-col items-center mt-3">
           <p className="font-bold text-xl">{profile?.full_name}</p>
-          {/* email */}
           <p className="text-lg font-semibold">{user?.email}</p>
-          <p className="text-md bg-blue-300 px-2 py-1 text-black rounded-xl">
+          <p className={`text-md px-2 py-1 rounded-xl ${roleBadgeClass()}`}>
             {profile?.role}
           </p>
           <button

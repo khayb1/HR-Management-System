@@ -6,7 +6,8 @@ import {
   Login,
   EmployeeDashboard,
   ApplyLeave,
-  ApproveLeave,
+  HodApproveLeave,
+  AdminApproveLeave,
   ManageUsers,
 } from "./Pages";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -34,6 +35,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* hod approve leave  */}
+          <Route
+            path="/hod-approve-leaves"
+            element={
+              <ProtectedRoute allowedRoles={["hod"]}>
+                <HodApproveLeave />
+              </ProtectedRoute>
+            }
+          />
+
           {/* admin  */}
 
           <Route
@@ -53,6 +64,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* admin approve leave  */}
+          <Route
+            path="/admin-approve-leaves"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminApproveLeave />
+              </ProtectedRoute>
+            }
+          />
+
           {/* employee  */}
           <Route
             path="/employeeDashboard"
@@ -72,15 +93,6 @@ function App() {
             }
           />
           {/* admin and hod only  */}
-
-          <Route
-            path="/approve-leaves"
-            element={
-              <ProtectedRoute allowedRoles={["hod", "admin"]}>
-                <ApproveLeave />
-              </ProtectedRoute>
-            }
-          />
 
           <Route path="*" element={<Login />} />
         </Routes>

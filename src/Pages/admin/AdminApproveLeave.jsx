@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { supabase } from "../../supabase";
 
-const ApproveLeave = () => {
+const AdminApproveLeave = () => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
@@ -35,7 +35,7 @@ const ApproveLeave = () => {
 
       const { data, error } = await supabase
         .from("profile")
-        .select("id, role, department_id, full_name")
+        .select("id, role, full_name")
         .eq("id", user.id)
         .single();
 
@@ -45,8 +45,8 @@ const ApproveLeave = () => {
         return;
       }
 
-      if (data.role !== "hod") {
-        setError("Access denied. Only HODs can approve leave.");
+      if (data.role !== "admin") {
+        setError("Access denied. Only Admins can approve leave.");
         setLoading(false);
         return;
       }
@@ -58,7 +58,7 @@ const ApproveLeave = () => {
     }
   };
 
-  /* ================= FETCH DEPARTMENT PENDING LEAVES ================= */
+  /* ================= FETCH HOD-APPROVED LEAVES ================= */
   const fetchPendingLeaves = async () => {
     setLoading(true);
     setError("");
@@ -68,29 +68,26 @@ const ApproveLeave = () => {
         .from("leave_requests")
         .select(
           `
-    id,
-    start_date,
-    end_date,
-    total_days,
-    reason,
-    status,
-    created_at,
-
-    employee:profile!leave_requests_user_id_fkey (
-      id,
-      full_name,
-      email,
-      department_id
-    ),
-
-    leave_types (
-      id,
-      name
-    )
-  `,
+          id,
+          start_date,
+          end_date,
+          total_days,
+          reason,
+          status,
+          created_at,
+          employee:profile!leave_requests_user_id_fkey (
+            id,
+            full_name,
+            email,
+            department_id
+          ),
+          leave_types (
+            id,
+            name
+          )
+        `,
         )
-        .eq("status", "pending")
-        .eq("employee.department_id", profile.department_id)
+        .eq("status", "hod_approved") // Only leaves approved by HOD
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -113,8 +110,8 @@ const ApproveLeave = () => {
       const { error } = await supabase
         .from("leave_requests")
         .update({
-          status: "approved",
-          approved_by: profile.id,
+          status: "approved", // final approved by Admin
+          admin_approved_by: profile.id,
         })
         .eq("id", leaveId);
 
@@ -135,6 +132,7 @@ const ApproveLeave = () => {
         .from("leave_requests")
         .update({
           status: "rejected",
+          admin_approved_by: profile.id,
         })
         .eq("id", leaveId);
 
@@ -151,7 +149,7 @@ const ApproveLeave = () => {
   /* ================= UI ================= */
   return (
     <>
-      <Header title="Approve Leave Requests" />
+      <Header title="Admin: Approve HOD-Approved Leave Requests" />
 
       <section className="p-4 max-w-7xl mx-auto">
         {error && (
@@ -162,7 +160,7 @@ const ApproveLeave = () => {
 
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-xl font-bold mb-4">
-            Pending Department Leave Requests
+            Pending HOD-Approved Leave Requests
           </h2>
 
           {loading ? (
@@ -192,8 +190,10 @@ const ApproveLeave = () => {
                 <tbody>
                   {leaves.map((leave) => (
                     <tr key={leave.id} className="hover:bg-gray-50">
-                      <td className="p-3 border">{leave.user?.full_name}</td>
-                      <td className="p-3 border">{leave.user?.email}</td>
+                      <td className="p-3 border">
+                        {leave.employee?.full_name}
+                      </td>
+                      <td className="p-3 border">{leave.employee?.email}</td>
                       <td className="p-3 border">{leave.leave_types?.name}</td>
                       <td className="p-3 border">
                         {new Date(leave.start_date).toLocaleDateString()}
@@ -233,4 +233,4 @@ const ApproveLeave = () => {
   );
 };
 
-export default ApproveLeave;
+export default AdminApproveLeave;
