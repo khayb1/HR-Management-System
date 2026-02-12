@@ -87,7 +87,7 @@ const AdminApproveLeave = () => {
           )
         `,
         )
-        .eq("status", "hod_approved") // Only leaves approved by HOD
+        .eq("status", "pending_admin") // Only leaves approved by HOD
         .order("created_at", { ascending: false });
 
       if (error) {

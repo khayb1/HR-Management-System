@@ -59,7 +59,6 @@ const ApplyLeave = () => {
       hours: durationType === "hourly" ? hours : null,
       total_days: totalDays,
       reason,
-      status: "pending",
     });
 
     if (error) {

@@ -87,7 +87,7 @@ const HodApproveLeave = () => {
           )
         `,
         )
-        .eq("status", "pending") // only pending leaves
+        .eq("status", "pending_hod") // only pending leaves
         .eq("employee.department_id", profile.department_id)
         .order("created_at", { ascending: false });
 
@@ -111,7 +111,7 @@ const HodApproveLeave = () => {
       const { error } = await supabase
         .from("leave_requests")
         .update({
-          status: "hod_approved",
+          status: "pending_admin",
           hod_approved_by: profile.id,
         })
         .eq("id", leaveId);
