@@ -4,5 +4,6 @@ export { default as EmployeeDashboard } from "./employee/EmployeeDashboard";
 export { default as HodApproveLeave } from "./hod/HodApproveLeave";
 export { default as AdminApproveLeave } from "./admin/AdminApproveLeave";
 export { default as ApplyLeave } from "./All Users/ApplyLeave";
+export { default as MyLeaves } from "./All Users/MyLeaves";
 export { default as ManageUsers } from "./admin/ManageUsers";
 export { default as Login } from "./auth/Login";

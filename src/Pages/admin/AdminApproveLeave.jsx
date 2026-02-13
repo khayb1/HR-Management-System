@@ -79,7 +79,10 @@ const AdminApproveLeave = () => {
             id,
             full_name,
             email,
-            department_id
+            department_id,
+            department:departments(
+            id,
+            name)
           ),
           leave_types (
             id,
@@ -193,8 +196,12 @@ const AdminApproveLeave = () => {
                       <td className="p-3 border">
                         {leave.employee?.full_name}
                       </td>
-                      <td className="p-3 border">{leave.employee?.email}</td>
-                      <td className="p-3 border">{leave.leave_types?.name}</td>
+                      <td className="p-3 border">
+                        {leave.employee?.department?.name}
+                      </td>
+                      <td className="p-3 border">
+                        {leave.leave_types?.name || "NA"}
+                      </td>
                       <td className="p-3 border">
                         {new Date(leave.start_date).toLocaleDateString()}
                       </td>

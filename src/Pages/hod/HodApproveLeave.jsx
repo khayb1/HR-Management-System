@@ -173,12 +173,12 @@ const HodApproveLeave = () => {
               No pending leave requests
             </p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-scroll">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="p-3 border">Employee</th>
-                    <th className="p-3 border">Email</th>
+                    <th className="p-3 border">Department</th>
                     <th className="p-3 border">Leave Type</th>
                     <th className="p-3 border">From</th>
                     <th className="p-3 border">To</th>
@@ -194,7 +194,7 @@ const HodApproveLeave = () => {
                       <td className="p-3 border">
                         {leave.employee?.full_name}
                       </td>
-                      <td className="p-3 border">{leave.employee?.email}</td>
+                      <td className="p-3 border">{leave.departments?.name}</td>
                       <td className="p-3 border">{leave.leave_types?.name}</td>
                       <td className="p-3 border">
                         {new Date(leave.start_date).toLocaleDateString()}

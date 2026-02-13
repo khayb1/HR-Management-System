@@ -9,6 +9,7 @@ import {
   HodApproveLeave,
   AdminApproveLeave,
   ManageUsers,
+  MyLeaves,
 } from "./Pages";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
@@ -89,6 +90,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
                 <ApplyLeave />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-leaves"
+            element={
+              <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
+                <MyLeaves />
               </ProtectedRoute>
             }
           />
