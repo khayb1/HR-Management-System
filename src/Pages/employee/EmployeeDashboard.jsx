@@ -17,13 +17,15 @@ const EmployeeDashboard = () => {
   const [totalLeave, setTotalLeave] = useState(0);
   const [daysUsed, setUsed] = useState(0);
   const [daysRemaining, setRemaining] = useState(0);
+  const [daysPending, setDaysPending] = useState(0);
 
   useEffect(() => {
     const loadLeave = async () => {
-      const { total, used, remaining } = await getLeaveSummary();
+      const { total, used, remaining, pending } = await getLeaveSummary();
       setTotalLeave(total);
       setUsed(used);
       setRemaining(remaining);
+      setDaysPending(pending);
     };
 
     loadLeave();
@@ -71,7 +73,7 @@ const EmployeeDashboard = () => {
           {/* Pending Requests */}
           <div className="flex flex-1 justify-between items-center shadow-xl bg-gray-200 p-10 rounded-lg gap-5 hover:-translate-y-2 transition-transform">
             <div>
-              <p className="text-3xl font-bold ">2</p>
+              <p className="text-3xl font-bold ">{daysPending}</p>
               <p>Pending Requests</p>
             </div>
             <span className="p-2 bg-orange-500 rounded-xl">

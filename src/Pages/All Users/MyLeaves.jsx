@@ -101,7 +101,7 @@ const MyLeaves = () => {
     <>
       <Header title="My Leaves" />
 
-      <section className="p-4 w-full  mx-auto">
+      <section className="p-4 w-full mx-auto">
         {error && (
           <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
             {error}
