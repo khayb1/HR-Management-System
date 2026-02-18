@@ -20,11 +20,15 @@ function App() {
   if (loading) return null;
 
   return (
-    <main className="flex">
+    <main className="flex w-full ">
       {/* Sidebar only when logged in */}
-      {user && <Sidebar role={role} />}
+      {user && (
+        <div className="sticky top-0 h-full left-0 w-fit">
+          <Sidebar role={role} />
+        </div>
+      )}
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col w-">
         <Routes>
           <Route path="/" element={<Login />} />
 

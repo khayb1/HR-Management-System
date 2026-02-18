@@ -30,13 +30,31 @@ const ApplyLeave = () => {
   /* ---------------- CALCULATE TOTAL DAYS ---------------- */
   const calculateTotalDays = () => {
     if (durationType === "half_day") return 0.5;
-    if (durationType === "hourly") return Number(hours) / 8;
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) + 1;
+    if (durationType === "hourly") {
+      if (!hours || hours <= 0) return 0;
+      return Number(hours) / 8;
+    }
 
-    return diff > 0 ? diff : 0;
+    const normalize = (date) =>
+      new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const start = normalize(new Date(startDate));
+    const end = normalize(new Date(endDate || startDate));
+
+    if (end < start) {
+      alert("End date cannot be before start date");
+      return 0;
+    }
+
+    let days = 0;
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) days++;
+    }
+
+    return days;
   };
 
   /* ---------------- SUBMIT ---------------- */
@@ -153,7 +171,8 @@ const ApplyLeave = () => {
             <label>Start Date</label>
             <input
               type="date"
-              className="w-full p-3 rounded"
+              className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
+              min={new Date().toISOString().split("T")[0]}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               required
@@ -164,7 +183,8 @@ const ApplyLeave = () => {
             <label>End Date</label>
             <input
               type="date"
-              className="w-full p-3 rounded"
+              min={new Date().toISOString().split("T")[0]}
+              className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
