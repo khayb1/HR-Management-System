@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Send } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../supabase";
 
@@ -218,12 +218,13 @@ const ApplyLeave = () => {
           <input
             readOnly
             value={profile?.full_name}
-            className="w-full p-3 rounded bg-gray-200"
+            className="w-full p-3 rounded bg-gray-200 "
           />
         </div>
 
-        <button className="w-fit px-6 py-3 bg-amber-400 rounded">
+        <button className="w-fit flex gap-3 hover:scale-105 transition-all  px-6 py-3 bg-amber-400 rounded">
           Submit Leave Request
+          <Send size={25} className="" />
         </button>
       </form>
     </>

@@ -9,7 +9,7 @@ import {
   HodApproveLeave,
   AdminApproveLeave,
   ManageUsers,
-  MyLeaves,
+  LeaveHistory,
 } from "./Pages";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
@@ -98,10 +98,10 @@ function App() {
             }
           />
           <Route
-            path="/my-leaves"
+            path="/leave-history"
             element={
               <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
-                <MyLeaves />
+                <LeaveHistory />
               </ProtectedRoute>
             }
           />
