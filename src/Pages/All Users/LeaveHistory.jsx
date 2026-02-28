@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { supabase } from "../../supabase";
 import { useAuth } from "../../context/AuthContext";
+import { Eye, X } from "lucide-react";
 
 const LeaveHistory = () => {
   const { profile } = useAuth();
@@ -9,6 +10,8 @@ const LeaveHistory = () => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // const [showPopUp, setShowPopUp] = useState(false);
+  const [selectedLeave, setSelectedLeave] = useState(null);
 
   const fetchMyLeaves = async () => {
     if (!profile?.id) return;
@@ -147,9 +150,10 @@ const LeaveHistory = () => {
                     <th className="p-3 border text-left">Start Date</th>
                     <th className="p-3 border text-left">End Date</th>
                     <th className="p-3 border text-center">Days</th>
-                    <th className="p-3 border text-left">Reason</th>
+                    {/* <th className="p-3 border text-left">Reason</th> */}
                     <th className="p-3 border text-center">Status</th>
-                    <th className="p-3 border text-left">Applied On</th>
+                    {/* <th className="p-3 border text-left">Applied On</th> */}
+                    <th className="p-3 border text-left">Full Details</th>
                   </tr>
                 </thead>
 
@@ -179,15 +183,17 @@ const LeaveHistory = () => {
                       <td className="p-3 border text-center font-semibold">
                         {leave.total_days}
                       </td>
-                      <td className="p-3 border max-w-xs">
+                      {/* Removed reason cos it makes the table too long  */}
+                      {/* <td className="p-3 border max-w-xs">
                         <div className="truncate" title={leave.reason}>
                           {leave.reason}
                         </div>
-                      </td>
+                      </td> */}
                       <td className="p-3 border text-center">
                         {getStatusBadge(leave.status)}
                       </td>
-                      <td className="p-3 border text-gray-600 text-sm">
+                      {/* removed because it makes the table too long  */}
+                      {/* <td className="p-3 border text-gray-600 text-sm">
                         {new Date(leave.created_at).toLocaleDateString(
                           "en-US",
                           {
@@ -195,6 +201,110 @@ const LeaveHistory = () => {
                             month: "short",
                             day: "numeric",
                           },
+                        )}
+                      </td> */}
+                      <td className="p-3 border text-center">
+                        <button
+                          onClick={() => setSelectedLeave(leave)}
+                          key={leave.id}
+                          className=""
+                        >
+                          <Eye
+                            size={30}
+                            className="text-amber-200 hover:text-amber-500 hover:cursor-context-menu"
+                          />
+                        </button>
+
+                        {/* pop up details  */}
+                        {selectedLeave && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/50 backdrop-blur-sm ">
+                            {/* pop up   */}
+                            <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6">
+                              {/* header section  */}
+                              <span className="flex justify-between items-center border-b pb-3 mb-4 ">
+                                <p className="text-lg font-semibold text-gray-800">
+                                  Leave Details
+                                </p>
+                                <button
+                                  onClick={() => setSelectedLeave(null)}
+                                  className="text-gray-400 hover:text-red-500 transition"
+                                >
+                                  <X color="red" />
+                                </button>
+                              </span>
+                              {/* Details  */}
+                              <div className="flex flex-col">
+                                {/* leave type  */}
+                                <span className="flex">
+                                  <p>Leave Type:</p>
+                                  {""}
+                                  <p>
+                                    {" "}
+                                    {selectedLeave.leave_types?.name || "N/A"}
+                                  </p>
+                                </span>
+                                {/* start date  */}
+                                <span className="flex">
+                                  <p>Start Date:</p>
+                                  {""}
+                                  <p>
+                                    {new Date(
+                                      selectedLeave.start_date,
+                                    ).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </p>
+                                </span>
+                                {/* end date  */}
+                                <span className="flex">
+                                  <p>End Date:</p>
+                                  {""}
+                                  <p>
+                                    {new Date(
+                                      selectedLeave.end_date,
+                                    ).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </p>
+                                </span>
+                                {/* number of days  */}
+                                <span className="flex">
+                                  <p>Total Days:</p>
+                                  {""}
+                                  <p> {selectedLeave.total_days}</p>
+                                </span>
+                                {/* reason  */}
+                                <span className="flex">
+                                  <p>Reason:</p>
+                                  {""}
+                                  <p> {selectedLeave.reason}</p>
+                                </span>
+                                {/* status  */}
+                                <span className="flex">
+                                  <p>Status:</p>
+                                  {""}
+                                  <p> {getStatusBadge(selectedLeave.status)}</p>
+                                </span>
+                                {/* applied on  */}
+                                <span className="flex">
+                                  <p>Applied on: </p>{" "}
+                                  <p>
+                                    {new Date(
+                                      selectedLeave.created_at,
+                                    ).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </p>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         )}
                       </td>
                     </tr>
