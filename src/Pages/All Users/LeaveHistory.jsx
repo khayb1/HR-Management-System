@@ -211,43 +211,48 @@ const LeaveHistory = () => {
                         >
                           <Eye
                             size={30}
-                            className="text-amber-200 hover:text-amber-500 hover:cursor-context-menu"
+                            className="text-amber-500 hover:text-amber-300 hover:cursor-context-menu transition-all"
                           />
                         </button>
 
                         {/* pop up details  */}
                         {selectedLeave && (
-                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/50 backdrop-blur-sm ">
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/20 backdrop-blur-xs ">
                             {/* pop up   */}
-                            <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6">
+                            <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6">
                               {/* header section  */}
                               <span className="flex justify-between items-center border-b pb-3 mb-4 ">
                                 <p className="text-lg font-semibold text-gray-800">
                                   Leave Details
                                 </p>
+                                {/* close pop up button  */}
                                 <button
                                   onClick={() => setSelectedLeave(null)}
                                   className="text-gray-400 hover:text-red-500 transition"
                                 >
-                                  <X color="red" />
+                                  <X
+                                    color="red"
+                                    size={30}
+                                    className="p-1   border-none shadow-sm hover:bg-red-300 transition-all hover:cursor-pointer text-3xl"
+                                  />
                                 </button>
                               </span>
                               {/* Details  */}
                               <div className="flex flex-col">
                                 {/* leave type  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>Leave Type:</p>
                                   {""}
-                                  <p>
+                                  <p className="font-light text-gray-500 ">
                                     {" "}
                                     {selectedLeave.leave_types?.name || "N/A"}
                                   </p>
                                 </span>
                                 {/* start date  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>Start Date:</p>
                                   {""}
-                                  <p>
+                                  <p className="font-light text-gray-500 ">
                                     {new Date(
                                       selectedLeave.start_date,
                                     ).toLocaleDateString("en-US", {
@@ -258,10 +263,10 @@ const LeaveHistory = () => {
                                   </p>
                                 </span>
                                 {/* end date  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>End Date:</p>
                                   {""}
-                                  <p>
+                                  <p className="font-light text-gray-500 gap-3">
                                     {new Date(
                                       selectedLeave.end_date,
                                     ).toLocaleDateString("en-US", {
@@ -272,27 +277,36 @@ const LeaveHistory = () => {
                                   </p>
                                 </span>
                                 {/* number of days  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>Total Days:</p>
                                   {""}
-                                  <p> {selectedLeave.total_days}</p>
+                                  <p className="font-light text-gray-500">
+                                    {" "}
+                                    {selectedLeave.total_days}
+                                  </p>
                                 </span>
                                 {/* reason  */}
-                                <span className="flex">
+                                <span className="flex gap-3">
                                   <p>Reason:</p>
                                   {""}
-                                  <p> {selectedLeave.reason}</p>
+                                  <p className="font-light text-gray-500">
+                                    {" "}
+                                    {selectedLeave.reason}
+                                  </p>
                                 </span>
                                 {/* status  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>Status:</p>
                                   {""}
-                                  <p> {getStatusBadge(selectedLeave.status)}</p>
+                                  <p className="font-light text-gray-500">
+                                    {" "}
+                                    {getStatusBadge(selectedLeave.status)}
+                                  </p>
                                 </span>
                                 {/* applied on  */}
-                                <span className="flex">
+                                <span className="flex items-center gap-3">
                                   <p>Applied on: </p>{" "}
-                                  <p>
+                                  <p className="font- text-gray-500">
                                     {new Date(
                                       selectedLeave.created_at,
                                     ).toLocaleDateString("en-US", {
