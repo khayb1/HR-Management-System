@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Header from "../../components/Header";
 import { CheckCircle2, Send } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -29,6 +29,8 @@ const ApplyLeave = () => {
 
   /* ---------------- CALCULATE TOTAL DAYS ---------------- */
   const calculateTotalDays = () => {
+    if (!startDate) return 0;
+
     if (durationType === "half_day") return 0.5;
 
     if (durationType === "hourly") {
@@ -36,6 +38,7 @@ const ApplyLeave = () => {
       return Number(hours) / 8;
     }
 
+    // checking if start date begins beofre end date
     const normalize = (date) =>
       new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -47,15 +50,23 @@ const ApplyLeave = () => {
       return 0;
     }
 
+    // excluding weekends
     let days = 0;
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const day = d.getDay();
       if (day !== 0 && day !== 6) days++;
+      // if (day == 0) alert("You cannot apply for leave on weekends");
     }
 
     return days;
   };
+
+  // hold value for total leave days
+
+  const totalDays = useMemo(() => {
+    return calculateTotalDays();
+  }, [startDate, endDate, durationType, hours]);
 
   /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async (e) => {
@@ -113,7 +124,7 @@ const ApplyLeave = () => {
         <div>
           <label>Leave Type</label>
           <select
-            className="w-full p-3 rounded bg-amber-50"
+            className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
             value={leaveTypeId}
             onChange={(e) => setLeaveTypeId(e.target.value)}
             required
@@ -132,7 +143,7 @@ const ApplyLeave = () => {
           <div>
             <label>Duration</label>
             <select
-              className="w-full p-3 rounded bg-amber-50"
+              className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
               value={durationType}
               onChange={(e) => setDurationType(e.target.value)}
             >
@@ -150,23 +161,24 @@ const ApplyLeave = () => {
         )}
 
         {/* HOURS */}
-        {durationType === "hourly" && (
+        {durationType === "hourly" ? (
           <div>
             <label>Number of Hours</label>
             <input
               type="number"
               min="1"
               max="8"
-              className="w-full p-3 rounded bg-amber-50"
+              className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
               value={hours}
               onChange={(e) => setHours(e.target.value)}
               required
             />
           </div>
-        )}
+        ) : null}
 
         {/* DATES */}
-        <div className="flex gap-4">
+        <div className="flex md:flex-row sm:flex-col gap-4 ">
+          {/* start date  */}
           <div className="flex-1">
             <label>Start Date</label>
             <input
@@ -175,10 +187,11 @@ const ApplyLeave = () => {
               min={new Date().toISOString().split("T")[0]}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              // disabled={durationType === "hourly"}
               required
             />
           </div>
-
+          {/* end date  */}
           <div className="flex-1">
             <label>End Date</label>
             <input
@@ -187,15 +200,28 @@ const ApplyLeave = () => {
               className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+              disabled={
+                durationType === "hourly" || durationType === "half_day"
+              }
             />
           </div>
+        </div>
+
+        {/* TOTAL LEAVE DAYS  */}
+        <div className="flex-1">
+          <label>Total leave days selected</label>
+          <input
+            readOnly
+            value={totalDays > 0 ? totalDays : "0"}
+            className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200 hover:cursor-not-allowed"
+          />
         </div>
 
         {/* REASON */}
         <div>
           <label>Reason</label>
           <textarea
-            className="w-full p-3 rounded bg-amber-50"
+            className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             required
@@ -205,7 +231,7 @@ const ApplyLeave = () => {
         <div>
           <label>Contact</label>
           <textarea
-            className="w-full p-3 rounded bg-amber-50"
+            className="w-full p-3 rounded bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
             required
@@ -218,7 +244,7 @@ const ApplyLeave = () => {
           <input
             readOnly
             value={profile?.full_name}
-            className="w-full p-3 rounded bg-gray-200 "
+            className="w-full p-3 rounded bg-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-200 hover:cursor-not-allowed"
           />
         </div>
 
