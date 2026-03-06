@@ -31,6 +31,7 @@ const Login = () => {
     // 1️⃣ Validate input FIRST
     if (!/\S+@\S+\.\S+/.test(email)) {
       setMessage("Please enter a valid email address");
+      setLoading(false);
       return;
     }
 
