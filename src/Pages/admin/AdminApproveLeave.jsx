@@ -78,15 +78,15 @@ const AdminApproveLeave = () => {
           status,
           created_at,
           employee:profile!leave_requests_user_id_fkey (
-  id,
-  full_name,
-  email,
-  department_id,
-  department:departments!profile_department_id_fkey (
-    id,
-    name
-  )
-),
+          id,
+          full_name,
+          email,
+          department_id,
+          department:departments!profile_department_id_fkey (
+            id,
+            name
+          )
+        ),
           leave_types (
             id,
             name
@@ -246,123 +246,125 @@ const AdminApproveLeave = () => {
                   ))}
                 </tbody>
               </table>
-              {/* pop out details  */}
-              {selectedLeave && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/20 backdrop-blur-xs ">
-                  <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6">
-                    {/* header section  */}
-                    <span className="flex justify-between items-center border-b pb-3 mb-4 ">
-                      <p className="text-lg font-semibold text-gray-800">
-                        Leave Details
-                      </p>
-                      {/* close pop up button  */}
-                      <button
-                        onClick={() => setSelectedLeave(null)}
-                        className="text-gray-400 hover:text-red-500 transition"
-                      >
-                        <X
-                          color="red"
-                          size={30}
-                          className="p-1   border-none shadow-sm hover:bg-red-300 transition-all hover:cursor-pointer text-3xl"
-                        />
-                      </button>
-                    </span>
-                    {/* Details  */}
-                    <div className="flex flex-col">
-                      {/* Employee Name  */}
-                      <span className="flex items-center gap-3">
-                        <p>Employee Name:</p>
-                        {""}
-                        <p className="font-light text-gray-500 ">
-                          {" "}
-                          {selectedLeave.employee?.full_name || "N/A"}
-                        </p>
-                      </span>
+            </div>
+          )}
+          {/* pop out details  */}
+          {selectedLeave && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/20 backdrop-blur-xs ">
+              <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6">
+                {/* header section  */}
+                <span className="flex justify-between items-center border-b pb-3 mb-4 ">
+                  <p className="text-lg font-semibold text-gray-800">
+                    Leave Details
+                  </p>
+                  {/* close pop up button  */}
+                  <button
+                    onClick={() => setSelectedLeave(null)}
+                    className="text-gray-400 hover:text-red-500 transition"
+                  >
+                    <X
+                      color="red"
+                      size={30}
+                      className="p-1   border-none shadow-sm hover:bg-red-300 transition-all hover:cursor-pointer text-3xl"
+                    />
+                  </button>
+                </span>
+                {/* Details  */}
+                <div className="flex flex-col">
+                  {/* Employee Name  */}
+                  <span className="flex items-center gap-3">
+                    <p>Employee Name:</p>
+                    {""}
+                    <p className="font-light text-gray-500 ">
+                      {" "}
+                      {selectedLeave.employee?.full_name || "N/A"}
+                    </p>
+                  </span>
 
-                      {/* department  */}
-                      <span className="flex gap-3">
-                        <p>Department:</p>
-                        {""}
-                        <p className="font-light text-gray-500">
-                          {" "}
-                          {selectedLeave.employee?.department?.name || "N/A"}
-                        </p>
-                      </span>
+                  {/* department  */}
+                  <span className="flex gap-3">
+                    <p>Department:</p>
+                    {""}
+                    <p className="font-light text-gray-500">
+                      {" "}
+                      {selectedLeave.employee?.department?.name || "N/A"}
+                    </p>
+                  </span>
 
-                      {/* leave type  */}
-                      <span className="flex items-center gap-3">
-                        <p>Leave Type:</p>
-                        {""}
-                        <p className="font-light text-gray-500 ">
-                          {" "}
-                          {selectedLeave.leave_types?.name || "N/A"}
-                        </p>
-                      </span>
-                      {/* start date  */}
-                      <span className="flex items-center gap-3">
-                        <p>Start Date:</p>
-                        {""}
-                        <p className="font-light text-gray-500 ">
-                          {new Date(
-                            selectedLeave.start_date,
-                          ).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </p>
-                      </span>
-                      {/* end date  */}
-                      <span className="flex items-center gap-3">
-                        <p>End Date:</p>
-                        {""}
-                        <p className="font-light text-gray-500 gap-3">
-                          {new Date(selectedLeave.end_date).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            },
-                          )}
-                        </p>
-                      </span>
-                      {/* number of days  */}
-                      <span className="flex items-center gap-3">
-                        <p>Total Days:</p>
-                        {""}
-                        <p className="font-light text-gray-500">
-                          {" "}
-                          {selectedLeave.total_days}
-                        </p>
-                      </span>
-                      {/* reason  */}
-                      <span className="flex gap-3">
-                        <p>Reason:</p>
-                        {""}
-                        <p className="font-light text-gray-500">
-                          {" "}
-                          {selectedLeave.reason}
-                        </p>
-                      </span>
+                  {/* leave type  */}
+                  <span className="flex items-center gap-3">
+                    <p>Leave Type:</p>
+                    {""}
+                    <p className="font-light text-gray-500 ">
+                      {" "}
+                      {selectedLeave.leave_types?.name || "N/A"}
+                    </p>
+                  </span>
+                  {/* start date  */}
+                  <span className="flex items-center gap-3">
+                    <p>Start Date:</p>
+                    {""}
+                    <p className="font-light text-gray-500 ">
+                      {new Date(selectedLeave.start_date).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
+                    </p>
+                  </span>
+                  {/* end date  */}
+                  <span className="flex items-center gap-3">
+                    <p>End Date:</p>
+                    {""}
+                    <p className="font-light text-gray-500 gap-3">
+                      {new Date(selectedLeave.end_date).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
+                    </p>
+                  </span>
+                  {/* number of days  */}
+                  <span className="flex items-center gap-3">
+                    <p>Total Days:</p>
+                    {""}
+                    <p className="font-light text-gray-500">
+                      {" "}
+                      {selectedLeave.total_days}
+                    </p>
+                  </span>
+                  {/* reason  */}
+                  <span className="flex gap-3">
+                    <p>Reason:</p>
+                    {""}
+                    <p className="font-light text-gray-500">
+                      {" "}
+                      {selectedLeave.reason}
+                    </p>
+                  </span>
 
-                      {/* applied on  */}
-                      <span className="flex items-center gap-3">
-                        <p>Applied on: </p>{" "}
-                        <p className="font- text-gray-500">
-                          {new Date(
-                            selectedLeave.created_at,
-                          ).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </p>
-                      </span>
-                    </div>
-                  </div>
+                  {/* applied on  */}
+                  <span className="flex items-center gap-3">
+                    <p>Applied on: </p>{" "}
+                    <p className="font- text-gray-500">
+                      {new Date(selectedLeave.created_at).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )}
+                    </p>
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>

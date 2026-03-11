@@ -71,7 +71,9 @@ const ManageUsers = () => {
         email,
         role,
         department_id,
-        departments (name)
+          department:departments!profile_department_id_fkey (
+            id,
+            name)
       `,
       )
       .order("created_at", { ascending: false });
