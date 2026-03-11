@@ -2,7 +2,7 @@ import React from "react";
 import { Calendar } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-const Header = ({ title }) => {
+const Header = ({ title, pageName }) => {
   const { profile } = useAuth();
 
   //  date
@@ -18,12 +18,10 @@ const Header = ({ title }) => {
       <nav className="flex justify-between items-center px-10 py-5 bg-gray-100">
         <div>
           <p className="font-bold text-2xl">{title}</p>
-          <p className="text-sm text-gray-600">
-            Welcome back {profile?.full_name}
-          </p>
+          <p className="text-2xl font-bold text-gray-900">{pageName}</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mr-5">
           <Calendar />
           <span>{today}</span>
         </div>

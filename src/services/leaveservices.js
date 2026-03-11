@@ -36,7 +36,6 @@ export const getLeaveSummary = async () => {
   const remaining = balance?.remaining_days ?? 0;
   const used = Math.max(total - remaining, 0);
   const pending = pendingLeaves?.length;
-  console.log(pending);
 
   return { total, used, remaining, pending };
 };

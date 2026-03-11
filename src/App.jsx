@@ -1,4 +1,5 @@
 import "./App.css";
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import {
   HodDashboard,
@@ -14,21 +15,28 @@ import {
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 import { useAuth } from "./context/AuthContext";
+import { Menu } from "lucide-react";
 function App() {
   const { user, role, loading } = useAuth();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (loading) return null;
 
   return (
     <main className="flex w-full ">
-      {/* Sidebar only when logged in */}
       {user && (
-        <div className="sticky top-0 h-full left-0 w-fit">
-          <Sidebar role={role} />
-        </div>
+        <button
+          onClick={() => setSidebarOpen((prev) => !prev)}
+          className="md:hidden fixed top-6 right-4 z-50 bg-gray-800 text-white p-2 rounded"
+        >
+          <Menu size={20} />
+        </button>
       )}
+      {/* Sidebar only when logged in */}
+      {user && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
 
-      <div className="flex flex-1 flex-col w-">
+      <div className="flex flex-1 flex-col w-full">
         <Routes>
           <Route path="/" element={<Login />} />
 
