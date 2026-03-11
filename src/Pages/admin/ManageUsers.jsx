@@ -418,7 +418,7 @@ const ManageUsers = () => {
                 No users found
               </div>
             ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-[600px]  overflow-y-auto pr-2">
                 {users.map((user) => {
                   const userLeaveBalance = leaveBalances[user.id];
                   return (

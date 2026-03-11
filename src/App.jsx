@@ -24,101 +24,104 @@ function App() {
   if (loading) return null;
 
   return (
-    <main className="flex w-full ">
-      {user && (
-        <button
-          onClick={() => setSidebarOpen((prev) => !prev)}
-          className="md:hidden fixed top-6 right-4 z-50 bg-gray-800 text-white p-2 rounded"
-        >
-          <Menu size={20} />
-        </button>
-      )}
-      {/* Sidebar only when logged in */}
-      {user && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
+    <>
+      <main className="flex w-full ">
+        {user && (
+          <button
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className="md:hidden fixed top-6 right-4 z-50 bg-gray-800 text-white p-2 rounded"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        {/* Sidebar only when logged in */}
+        <div className="fixed h-screen overflow-auto">
+          {user && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
+        </div>
+        <div className="flex flex-1 flex-col w-full">
+          <Routes>
+            <Route path="/" element={<Login />} />
 
-      <div className="flex flex-1 flex-col w-full">
-        <Routes>
-          <Route path="/" element={<Login />} />
+            <Route
+              path="/hodDashboard"
+              element={
+                <ProtectedRoute allowedRoles={["hod"]}>
+                  <HodDashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* hod approve leave  */}
+            <Route
+              path="/hod-approve-leaves"
+              element={
+                <ProtectedRoute allowedRoles={["hod"]}>
+                  <HodApproveLeave />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/hodDashboard"
-            element={
-              <ProtectedRoute allowedRoles={["hod"]}>
-                <HodDashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* hod approve leave  */}
-          <Route
-            path="/hod-approve-leaves"
-            element={
-              <ProtectedRoute allowedRoles={["hod"]}>
-                <HodApproveLeave />
-              </ProtectedRoute>
-            }
-          />
+            {/* admin  */}
 
-          {/* admin  */}
+            <Route
+              path="/adminDashboard"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/adminDashboard"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/manage-users"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <ManageUsers />
+                </ProtectedRoute>
+              }
+            />
+            {/* admin approve leave  */}
+            <Route
+              path="/admin-approve-leaves"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminApproveLeave />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/manage-users"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <ManageUsers />
-              </ProtectedRoute>
-            }
-          />
-          {/* admin approve leave  */}
-          <Route
-            path="/admin-approve-leaves"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminApproveLeave />
-              </ProtectedRoute>
-            }
-          />
+            {/* employee  */}
+            <Route
+              path="/employeeDashboard"
+              element={
+                <ProtectedRoute allowedRoles={["employee"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* all users  */}
+            <Route
+              path="/apply-leave"
+              element={
+                <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
+                  <ApplyLeave />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leave-history"
+              element={
+                <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
+                  <LeaveHistory />
+                </ProtectedRoute>
+              }
+            />
+            {/* admin and hod only  */}
 
-          {/* employee  */}
-          <Route
-            path="/employeeDashboard"
-            element={
-              <ProtectedRoute allowedRoles={["employee"]}>
-                <EmployeeDashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* all users  */}
-          <Route
-            path="/apply-leave"
-            element={
-              <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
-                <ApplyLeave />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/leave-history"
-            element={
-              <ProtectedRoute allowedRoles={["employee", "hod", "admin"]}>
-                <LeaveHistory />
-              </ProtectedRoute>
-            }
-          />
-          {/* admin and hod only  */}
-
-          <Route path="*" element={<Login />} />
-        </Routes>
-      </div>
-    </main>
+            <Route path="*" element={<Login />} />
+          </Routes>
+        </div>
+      </main>
+    </>
   );
 }
 
