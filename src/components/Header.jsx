@@ -15,7 +15,7 @@ const Header = ({ title, pageName }) => {
 
   return (
     <>
-      <nav className="flex justify-between items-center px-10 py-5 bg-gray-100">
+      <nav className="flex sticky top-0 z-40 justify-between items-center px-10 py-5 bg-gray-100">
         <div>
           <p className="font-bold text-2xl">{title}</p>
           <p className="text-2xl font-bold text-gray-900">{pageName}</p>

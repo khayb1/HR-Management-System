@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../components/Header";
 
-import { Calendar, Clock, FileCheckIcon, Users } from "lucide-react";
+import { Clock, FileCheckIcon, Hourglass, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardStats } from "../../services/dashboardqueries";
 
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
             <h3>HOD Pending Leaves</h3>
           </span>
           <span className="p-2 bg-red-500 rounded-xl">
-            <Clock size={40} color="white" />
+            <Hourglass size={40} color="white" />
           </span>
         </div>
 
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
             <h3>Admin Pending Leaves</h3>
           </span>
           <span className="p-2 bg-pink-500 rounded-xl">
-            <FileCheckIcon size={40} color="white" />
+            <Clock size={40} color="white" />
           </span>
         </div>
 
