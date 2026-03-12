@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     <>
       <nav
         className={`fixed top-0 left-0 h-screen w-fit bg-gray-800 text-gray-200
-  transform transition-transform duration-300 z-50
+  transform transition-transform duration-300 z-50 overflow-y-auto
   ${isOpen ? "translate-x-0" : "-translate-x-full"}
   md:translate-x-0 md:static
   flex flex-col py-4 px-4`}

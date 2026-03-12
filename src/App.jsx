@@ -25,7 +25,7 @@ function App() {
 
   return (
     <>
-      <main className="flex w-full ">
+      <main className="flex h-screen ">
         {user && (
           <button
             onClick={() => setSidebarOpen((prev) => !prev)}
@@ -35,10 +35,9 @@ function App() {
           </button>
         )}
         {/* Sidebar only when logged in */}
-        <div className="fixed h-screen overflow-auto">
-          {user && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
-        </div>
-        <div className="flex flex-1 flex-col w-full">
+        {user && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
+
+        <div className="flex-1 overflow-y-auto ">
           <Routes>
             <Route path="/" element={<Login />} />
 
